@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accident Forecast</title>
+    <style>
+        /* Resetting some basic styles */
+        body, h1, h2, p, label, select, input, button {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        /* General body styling */
+        body {
+            background-color: #f4f4f9;
+            color: #333;
+            line-height: 1.6;
+            font-size: 16px;
+            padding: 20px;
+        }
+
+        /* Container for the form and content */
+        .container {
+            width: 80%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Heading */
+        h1 {
+            text-align: center;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        /* Welcome message */
+        .welcome {
+            font-size: 1.2em;
+            text-align: center;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        /* Form styling */
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        select, input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 15px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Forecast result styling */
+        #forecastResult {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Style for error messages */
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        /* Make the form more responsive */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+
+            .container {
+                width: 100%;
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.5em;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Accident Forecast</h1>
+        <p class="welcome">Welcome! Please select the category, type, year, and month to get the accident forecast.</p>
+        
+        <form id="predictionForm">
+            <label for="category">Category:</label>
+            <select id="category" name="category">
+                {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                {% endfor %}
+            </select><br>
+            
+            <label for="type">Type:</label>
+            <select id="type" name="type">
+                {% for type in types %}
+                    <option value="{{ type }}">{{ type }}</option>
+                {% endfor %}
+            </select><br>
+            
+            <label for="year">Year:</label>
+            <input type="text" id="year" name="year" placeholder="Year"><br>
+            
+            <label for="month">Month:</label>
+            <input type="text" id="month" name="month" placeholder="Month"><br>
+            
+            <button type="button" onclick="getForecast()">Get Forecast</button>
+        </form>
+        
+        <div id="forecastResult"></div>
+    </div>
+
+    <script>
+        function getForecast() {
+            const category = document.getElementById('category').value;
+            const _type = document.getElementById('type').value;
+            const year = document.getElementById('year').value;
+            const month = document.getElementById('month').value;
+
+            fetch('/forecast', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ category, type: _type, year, month }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                const forecastResult = document.getElementById('forecastResult');
+                if (data.error) {
+                    forecastResult.innerHTML = `<p class="error">Error: ${data.error}</p>`;
+                } else {
+                    forecastResult.innerHTML = `<h2>Predicted Value:</h2>`;
+                    forecastResult.innerHTML += `<p><strong>Category:</strong> ${data.category}</p>`;
+                    forecastResult.innerHTML += `<p><strong>Type:</strong> ${data.type}</p>`;
+                    forecastResult.innerHTML += `<p><strong>Year:</strong> ${data.year}</p>`;
+                    forecastResult.innerHTML += `<p><strong>Month:</strong> ${data.month}</p>`;
+                    forecastResult.innerHTML += `<p><strong>Predicted Value:</strong> ${data.predicted_value}</p>`;
+                }
+            })
+            .catch(error => {
+                alert('Error fetching forecast data: ' + error);
+            });
+        }
+    </script>
+</body>
+</html>
