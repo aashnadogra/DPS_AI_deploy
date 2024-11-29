@@ -49,10 +49,7 @@ def get_forecast():
         predicted_value = specific_prediction['yhat'].values[0]
 
         return jsonify({
-            'category': category,
-            'type': _type,
-            'year': year,
-            'month': month,
+       
             'predicted_value': predicted_value
         })
 
