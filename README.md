@@ -51,7 +51,7 @@ steps:
   - step: Deployment
     details:
       - Set Up Google Cloud Environment on GCP and authenticate Google Cloud SDK.
-      - DContainerize the Application with DOCKER.
+      - Containerize the Application with DOCKER.
       - Initialize project, set up permissions and apis, deploy the app.
 
 # Tech Stack
